@@ -8,10 +8,14 @@ import React, {
   Component,
   StyleSheet,
   Text,
-  View
+  View,
+  ListView
 } from 'react-native';
 
-import {List, Range} from 'immutable'
+import Dimensions from 'Dimensions'
+
+let {height, width}  = Dimensions.get('window')
+import {List, Range, is} from 'immutable'
 
 // import Board from './src/components/Board'
 
@@ -22,16 +26,16 @@ class Board extends Component {
     this.piecesToRow = this.piecesToRow.bind(this)
 
     //Board creation
-    const pieces = List(['rook','knight','bishop','king','queen','bishop','knight','rook'])
+    const pieces = ['rook','knight','bishop','king','queen','bishop','knight','rook']
     const whitePieces = pieces
     const blackPieces = pieces
-    const emptyRow = Range(0,8).map(() => null)
+    const emptyRow = Range(0,8).map(() => null).toArray()
     const pawnRow = emptyRow.map(() => 'pawn')
     const whitePiecesRow = this.piecesToRow(whitePieces, true)
     const blackPiecesRow = this.piecesToRow(blackPieces, false)
     const whitePawnRow = this.piecesToRow(pawnRow, true)
     const blackPawnRow = this.piecesToRow(pawnRow, false)
-    const board = List([
+    const board = [
       blackPiecesRow,
       blackPawnRow,
       emptyRow,
@@ -40,10 +44,11 @@ class Board extends Component {
       emptyRow,
       whitePawnRow,
       whitePiecesRow
-    ])
-
+    ]
+  console.log(board, 'board')
+   const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => is(r1, r2)})
     this.state = {
-      board
+      dataSource: ds.cloneWithRows(board)
     }
   }
 
@@ -58,10 +63,30 @@ class Board extends Component {
 
   render() {
     return (
-      <View>
-        <Text style={styles.welcome}>
-          Board View
-        </Text>
+      <View style={board.wrapper}>
+        <ListView
+          style={board.list}
+          dataSource={this.state.dataSource}
+          renderRow={rowData => {
+            return (
+              <View style={board.container}>
+               {
+                rowData.map((piece, i) => {
+                  return piece ? (
+                    <View style={board.row} key={i}>
+                        <Text>{piece.type}</Text>
+                    </View>
+                  ) : (
+                    <View style={board.emptySquares} key={i}>
+                      <Text>empty</Text>
+                    </View>
+                  )
+                })
+               }
+              </View>
+            )
+          }}
+        />
       </View>
     )
   }
@@ -77,6 +102,34 @@ class chessMe extends Component {
     );
   }
 }
+
+
+
+
+const board = StyleSheet.create({
+  wrapper: {
+    backgroundColor: 'purple',
+    width,
+  },
+  container: {
+    backgroundColor: 'green',
+  },
+  row: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 100,
+    backgroundColor: 'blue',
+    borderWidth: 1,
+    borderColor: 'black',
+  },
+  emptySquares: {
+    backgroundColor: 'red',
+  },
+  list: {
+  }
+});
+
 
 const styles = StyleSheet.create({
   container: {
@@ -94,7 +147,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
-  },
+  }
 });
 
 AppRegistry.registerComponent('chessMe', () => chessMe);
