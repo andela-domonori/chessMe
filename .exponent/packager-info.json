@@ -1,0 +1,6 @@
+{
+  "packagerPort": 19003,
+  "port": 19002,
+  "ngrok": "http://8e-uqc.breadface.chessme.exp.direct",
+  "packagerNgrok": "https://packager.8e-uqc.breadface.chessme.exp.direct"
+}
