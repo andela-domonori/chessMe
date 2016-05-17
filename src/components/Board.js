@@ -8,65 +8,45 @@ const {
   ListView
 }  =  React
 
-import {List, Range, is} from 'immutable'
 import Dimensions from 'Dimensions'
+import Officials from './Officals'
 const {height, width}  = Dimensions.get('window')
 
 class Board extends Component {
   constructor(props) {
     super(props)
-    this.piecesToRow = this.piecesToRow.bind(this)
-
-    //Board creation
-    const pieces = ['rook','knight','bishop','king','queen','bishop','knight','rook']
-    const whitePieces = pieces
-    const blackPieces = pieces
-    const emptyRow = Range(0,8).map(() => null).toArray()
-    const pawnRow = emptyRow.map(() => 'pawn')
-    const whitePiecesRow = this.piecesToRow(whitePieces, true)
-    const blackPiecesRow = this.piecesToRow(blackPieces, false)
-    const whitePawnRow = this.piecesToRow(pawnRow, true)
-    const blackPawnRow = this.piecesToRow(pawnRow, false)
-    const board = [
-      blackPiecesRow,
-      blackPawnRow,
-      emptyRow,
-      emptyRow,
-      emptyRow,
-      emptyRow,
-      whitePawnRow,
-      whitePiecesRow
-    ]
-  console.log(board, 'board')
-   const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => is(r1, r2)})
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
-      dataSource: ds.cloneWithRows(board)
+      dataSource: ds.cloneWithRows(Officials)
     }
   }
 
-  piecesToRow(pieces, white) {
-    return pieces.map(x => {
-      return {
-       white,
-       type: x
-      }
-    })
-  }
-
   render() {
+    const evenRows = () => {}
+    const oddRows = () => {}
     return (
       <View style={board.wrapper}>
         <ListView
-          style={board.list}
+          contentContainerStyle={board.list}
           dataSource={this.state.dataSource}
-          renderRow={rowData => {
+          renderRow={(rowData, sectionData, rowId) => {
+            console.log(rowData, sectionData, rowId, 'rowdata')
             return (
-              <View style={board.container}>
+              <View
+                style={[board.container, {
+                  backgroundColor: (((parseInt(rowId) + 1) % 2) === 0) ? '#aaa' : 'white'
+                }]}
+              >
                {
                 rowData.map((piece, i) => {
                   return piece ? (
-                    <View style={board.row} key={i}>
-                        <Text>{piece.type}</Text>
+                    <View
+                      style={[board.row, {
+                        backgroundColor: (((parseInt(rowId) + 1) % 2) === 0) ? '#aaa' : 'white'
+                      }]}
+                      key={i}
+                    >
+                      <Text>{piece.type}</Text>
                     </View>
                   ) : (
                     <View style={board.emptySquares} key={i}>
@@ -91,21 +71,27 @@ const board = StyleSheet.create({
     width,
   },
   container: {
+    flexDirection: 'row',
     backgroundColor: 'green',
   },
   row: {
-    flex: 1,
+    width: (width/8),
+    height: (height/16),
     justifyContent: 'center',
     alignItems: 'center',
-    width: 100,
-    backgroundColor: 'blue',
     borderWidth: 1,
     borderColor: 'black',
   },
   emptySquares: {
-    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    width: (width/8),
+    height: (height/16),
   },
   list: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   }
 });
 

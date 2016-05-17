@@ -5,8 +5,12 @@
   "scripts": {
     "start": "react-native start"
   },
+  "main": "./index.ios.js",
+  "exp": {
+    "sdkVersion": "5.0.0"
+  },
   "dependencies": {
     "react": "^0.14.8",
-    "react-native": "^0.23.0"
+    "react-native": "exponentjs/react-native#sdk-5.0.0"
   }
 }
